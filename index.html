@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API AI - Chat Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .api-key-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .api-key-input {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .api-key-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .api-key-input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .api-key-status {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .config-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .config-select {
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .config-select option {
+            background: #667eea;
+            color: white;
+        }
+
+        .config-select:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .config-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-right: 4px;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.assistant {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .message.user .message-bubble {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-label {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #messageInput:focus {
+            border-color: #667eea;
+        }
+
+        #sendButton {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #sendButton:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 API AI Chat Tester</h1>
+            <p>Prueba tu API de chat en tiempo real</p>
+            <div class="api-key-container">
+                <input 
+                    type="password" 
+                    id="apiKeyInput" 
+                    class="api-key-input" 
+                    placeholder="API Key (opcional si está configurada en el servidor)"
+                    autocomplete="off"
+                >
+                <span class="api-key-status" id="apiKeyStatus"></span>
+            </div>
+            <div class="config-container">
+                <span class="config-label">Service:</span>
+                <select id="serviceSelect" class="config-select">
+                    <option value="">Auto (Round-robin)</option>
+                    <option value="groq">Groq</option>
+                    <option value="cerebras">Cerebras</option>
+                </select>
+                <span class="config-label">Model:</span>
+                <input 
+                    type="text" 
+                    id="modelInput" 
+                    class="api-key-input" 
+                    placeholder="Modelo (opcional)"
+                    autocomplete="off"
+                    style="flex: 0 1 200px;"
+                >
+                <span class="config-label">Language:</span>
+                <select id="languageSelect" class="config-select">
+                    <option value="español" selected>Español (Default)</option>
+                    <option value="english">English</option>
+                    <option value="français">Français</option>
+                    <option value="deutsch">Deutsch</option>
+                    <option value="italiano">Italiano</option>
+                    <option value="português">Português</option>
+                    <option value="中文">中文</option>
+                    <option value="日本語">日本語</option>
+                    <option value="한국어">한국어</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <p>Envía un mensaje para comenzar</p>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Escribe tu mensaje aquí..."
+                autocomplete="off"
+            >
+            <button id="sendButton">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const apiKeyStatus = document.getElementById('apiKeyStatus');
+        const serviceSelect = document.getElementById('serviceSelect');
+        const modelInput = document.getElementById('modelInput');
+        const languageSelect = document.getElementById('languageSelect');
+        
+        let messages = [];
+        let isLoading = false;
+
+        // Cargar configuración del localStorage
+        const savedApiKey = localStorage.getItem('apiKey');
+        if (savedApiKey) {
+            apiKeyInput.value = savedApiKey;
+            updateApiKeyStatus(true);
+        }
+
+        const savedService = localStorage.getItem('service');
+        if (savedService) {
+            serviceSelect.value = savedService;
+        }
+
+        const savedModel = localStorage.getItem('model');
+        if (savedModel) {
+            modelInput.value = savedModel;
+        }
+
+        const savedLanguage = localStorage.getItem('language');
+        if (savedLanguage) {
+            languageSelect.value = savedLanguage;
+        } else {
+            // Si no hay idioma guardado, usar español por defecto
+            languageSelect.value = 'español';
+        }
+
+        // Guardar configuración cuando cambia
+        serviceSelect.addEventListener('change', (e) => {
+            const value = e.target.value;
+            if (value) {
+                localStorage.setItem('service', value);
+            } else {
+                localStorage.removeItem('service');
+            }
+        });
+
+        modelInput.addEventListener('input', (e) => {
+            const value = e.target.value.trim();
+            if (value) {
+                localStorage.setItem('model', value);
+            } else {
+                localStorage.removeItem('model');
+            }
+        });
+
+        languageSelect.addEventListener('change', (e) => {
+            const value = e.target.value;
+            if (value) {
+                localStorage.setItem('language', value);
+            } else {
+                localStorage.removeItem('language');
+            }
+        });
+
+        // Guardar API key cuando cambia
+        apiKeyInput.addEventListener('input', (e) => {
+            const apiKey = e.target.value.trim();
+            if (apiKey) {
+                localStorage.setItem('apiKey', apiKey);
+                updateApiKeyStatus(true);
+            } else {
+                localStorage.removeItem('apiKey');
+                updateApiKeyStatus(false);
+            }
+        });
+
+        function updateApiKeyStatus(hasKey) {
+            if (hasKey) {
+                apiKeyStatus.textContent = '✓';
+                apiKeyStatus.style.color = '#4ade80';
+            } else {
+                apiKeyStatus.textContent = '';
+            }
+        }
+
+        function getApiKey() {
+            return apiKeyInput.value.trim() || null;
+        }
+
+        function addMessage(role, content, isStreaming = false) {
+            // Remove empty state if exists
+            const emptyState = chatContainer.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = role === 'user' ? 'Tú' : 'Asistente';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = content;
+            
+            if (isStreaming) {
+                bubble.id = 'streaming-message';
+            }
+            
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(bubble);
+            chatContainer.appendChild(messageDiv);
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            return bubble;
+        }
+
+        function updateStreamingMessage(content) {
+            let bubble = document.getElementById('streaming-message');
+            if (!bubble) {
+                bubble = addMessage('assistant', '', true);
+            }
+            bubble.textContent = content;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function finishStreaming() {
+            const bubble = document.getElementById('streaming-message');
+            if (bubble) {
+                bubble.removeAttribute('id');
+            }
+        }
+
+        async function sendMessage() {
+            const content = messageInput.value.trim();
+            if (!content || isLoading) return;
+
+            // Add user message
+            addMessage('user', content);
+            messages.push({ role: 'user', content });
+            messageInput.value = '';
+            sendButton.disabled = true;
+            isLoading = true;
+
+            try {
+                const apiKey = getApiKey();
+                const service = serviceSelect.value.trim();
+                const model = modelInput.value.trim();
+                const language = languageSelect.value.trim();
+                
+                const headers = {
+                    'Content-Type': 'application/json',
+                };
+
+                // Agregar header de autenticación si hay API key
+                if (apiKey) {
+                    headers['Authorization'] = `Bearer ${apiKey}`;
+                }
+
+                // Agregar header de service solo si tiene un valor válido
+                if (service && service.length > 0) {
+                    headers['service'] = service;
+                }
+
+                // Agregar header de model solo si tiene un valor válido
+                if (model && model.length > 0) {
+                    headers['model'] = model;
+                }
+
+                // Preparar body con messages y language
+                const body = { messages };
+                if (language && language.length > 0) {
+                    body.language = language;
+                }
+
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(body),
+                });
+
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch {
+                        errorData = { error: `Error ${response.status}` };
+                    }
+                    
+                    if (response.status === 401) {
+                        throw new Error(errorData.error || 'No autorizado. Verifica tu API key.');
+                    }
+                    
+                    // Mostrar mensaje de error más descriptivo
+                    const errorMessage = errorData.error || `Error ${response.status}`;
+                    throw new Error(errorMessage);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantContent = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    assistantContent += chunk;
+                    updateStreamingMessage(assistantContent);
+                }
+
+                finishStreaming();
+                messages.push({ role: 'assistant', content: assistantContent });
+            } catch (error) {
+                let errorMessage = 'Error desconocido';
+                if (error instanceof Error) {
+                    errorMessage = error.message;
+                } else if (typeof error === 'string') {
+                    errorMessage = error;
+                }
+                
+                // Mostrar error de forma más amigable
+                addMessage('assistant', `❌ Error: ${errorMessage}`);
+            } finally {
+                sendButton.disabled = false;
+                isLoading = false;
+                messageInput.focus();
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Focus input on load
+        messageInput.focus();
+    </script>
+</body>
+</html>
+

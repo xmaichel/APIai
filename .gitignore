@@ -5,6 +5,7 @@ node_modules
 out
 dist
 *.tgz
+build
 
 # code coverage
 coverage
@@ -12,23 +13,56 @@ coverage
 
 # logs
 logs
+*.log
 _.log
 report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # dotenv environment variable files
 .env
+.env.*
 .env.development.local
 .env.test.local
 .env.production.local
 .env.local
+!.env.example
 
 # caches
 .eslintcache
 .cache
 *.tsbuildinfo
+.bun
 
 # IntelliJ based IDEs
 .idea
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+*.code-workspace
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
+
+# Test files
+test*.txt
+*.test.txt
+test,txt
+
+# Lock files (opcional - descomenta si no quieres subir bun.lock)
+# bun.lock

@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "api-ai-collection",
+		"name": "API AI - Chat",
+		"description": "Colección para probar el API de chat",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Chat - Mensaje Simple",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}",
+						"type": "text",
+						"description": "API Key para autenticación (opcional si no está configurada en el servidor)"
+					},
+					{
+						"key": "service",
+						"value": "{{service}}",
+						"type": "text",
+						"description": "Servicio a usar: groq o cerebras (opcional, usa round-robin si no se especifica)"
+					},
+					{
+						"key": "model",
+						"value": "{{model}}",
+						"type": "text",
+						"description": "Modelo a usar (opcional, usa el modelo por defecto del servicio si no se especifica)"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Hola, ¿cómo estás?\"\n    }\n  ],\n  \"language\": \"español\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/chat",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"chat"
+					]
+				},
+				"description": "Envía un mensaje simple al chat"
+			},
+			"response": []
+		},
+		{
+			"name": "Chat - Con System Message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}",
+						"type": "text",
+						"description": "API Key para autenticación (opcional si no está configurada en el servidor)"
+					},
+					{
+						"key": "service",
+						"value": "{{service}}",
+						"type": "text",
+						"description": "Servicio a usar: groq o cerebras (opcional, usa round-robin si no se especifica)"
+					},
+					{
+						"key": "model",
+						"value": "{{model}}",
+						"type": "text",
+						"description": "Modelo a usar (opcional, usa el modelo por defecto del servicio si no se especifica)"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un asistente útil y amigable.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Explícame qué es TypeScript\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/chat",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"chat"
+					]
+				},
+				"description": "Envía un mensaje con contexto del sistema"
+			},
+			"response": []
+		},
+		{
+			"name": "Chat - Conversación",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{api_key}}",
+						"type": "text",
+						"description": "API Key para autenticación (opcional si no está configurada en el servidor)"
+					},
+					{
+						"key": "service",
+						"value": "{{service}}",
+						"type": "text",
+						"description": "Servicio a usar: groq o cerebras (opcional, usa round-robin si no se especifica)"
+					},
+					{
+						"key": "model",
+						"value": "{{model}}",
+						"type": "text",
+						"description": "Modelo a usar (opcional, usa el modelo por defecto del servicio si no se especifica)"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"¿Cuál es la capital de Francia?\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"La capital de Francia es París.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"¿Y cuántos habitantes tiene?\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/chat",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"chat"
+					]
+				},
+				"description": "Ejemplo de conversación con múltiples mensajes"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:4000",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "your-api-key-here",
+			"type": "string",
+			"description": "API Key para autenticación. Configura este valor con tu API key."
+		},
+		{
+			"key": "service",
+			"value": "",
+			"type": "string",
+			"description": "Servicio a usar: groq o cerebras. Deja vacío para usar round-robin."
+		},
+		{
+			"key": "model",
+			"value": "",
+			"type": "string",
+			"description": "Modelo a usar. Deja vacío para usar el modelo por defecto del servicio."
+		}
+	]
+}
+
